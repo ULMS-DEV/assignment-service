@@ -45,8 +45,8 @@ importers:
         specifier: ^7.8.1
         version: 7.8.2
       ulms-contracts:
-        specifier: ^4.2.0
-        version: 4.2.0
+        specifier: ^4.5.0
+        version: 4.5.0
     devDependencies:
       '@eslint/eslintrc':
         specifier: ^3.2.0
@@ -3159,8 +3159,8 @@ packages:
     resolution: {integrity: sha512-rvKSBiC5zqCCiDZ9kAOszZcDvdAHwwIKJG33Ykj43OKcWsnmcBRL09YTU4nOeHZ8Y2a7l1MgTd08SBe9A8Qj6A==}
     engines: {node: '>=18'}
 
-  ulms-contracts@4.2.0:
-    resolution: {integrity: sha512-3A2bJ79mqqYkCvJeKxR6qC/WbQkyVOXY9ah2GqM0mMW4XmiqEaUEFa5l8u5SiDOU8yJyF8GAXRzTIugWHe8I5A==}
+  ulms-contracts@4.5.0:
+    resolution: {integrity: sha512-cYva2WIOUearj4xT0tPFeN+01GN7Xkv56ARzrCe/uAWblyKD7UhLOFb3+8vksMugAa6rxBQ3LUbxC49cc+Iamg==}
 
   undici-types@6.21.0:
     resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
@@ -6691,7 +6691,7 @@ snapshots:
 
   uint8array-extras@1.5.0: {}
 
-  ulms-contracts@4.2.0: {}
+  ulms-contracts@4.5.0: {}
 
   undici-types@6.21.0: {}
 

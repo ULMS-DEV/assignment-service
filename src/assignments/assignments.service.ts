@@ -32,7 +32,21 @@ export class AssignmentsService implements OnModuleInit {
 
   async getAssignmentById(id: string) {
     const assignment = await this.assignmentsDAO.getById(id);
-    return convertDates(assignment);
+    if(!assignment){
+      throw new GrpcNotFoundException('Assignment not found');
+    }
+    const convertedAssignment = {
+      ...assignment,
+      submissions: assignment.submissions.map(submission => ({
+        ...submission,
+        analysisResult: submission.analysisResult ? {
+          ...submission.analysisResult,
+          plagiarismCheck: JSON.stringify(submission.analysisResult.plagiarismCheck),
+          grading: JSON.stringify(submission.analysisResult.grading)
+        } : null
+      }))
+    };
+    return convertDates(convertedAssignment);
   }
 
   async getStudentCourses(studentId: string) {
@@ -47,8 +61,21 @@ export class AssignmentsService implements OnModuleInit {
     try {
       const studentCourses = await this.getStudentCourses(studentId);
       const courseIds = studentCourses.offers.map(offer => offer.courseId);
-      const assignments = await this.assignmentsDAO.getStudentAssignments(courseIds);
-      return {assignments: assignments.map(assignment => convertDates(assignment))};
+      const assignments = (await this.assignmentsDAO.getStudentAssignments(courseIds)).map(assignment => {
+        const convertedAssignment = {
+          ...assignment,
+          submissions: assignment.submissions.map(submission => ({
+            ...submission,
+            analysisResult: submission.analysisResult ? {
+              ...submission.analysisResult,
+              plagiarismCheck: JSON.stringify(submission.analysisResult.plagiarismCheck),
+              grading: JSON.stringify(submission.analysisResult.grading)
+            } : null
+          }))
+        };
+        return convertDates(convertedAssignment);
+      });
+      return { assignments };
       
     } catch (error) {
       console.log(error);
@@ -56,8 +83,21 @@ export class AssignmentsService implements OnModuleInit {
   }
 
   async getCourseAssignments(courseId: string) {
-    const assignments = await this.assignmentsDAO.getCourseAssignments(courseId);
-    return {assignments: assignments.map(assignment => convertDates(assignment))};
+    const assignments = (await this.assignmentsDAO.getCourseAssignments(courseId)).map(assignment => {
+      const convertedAssignment = {
+        ...assignment,
+        submissions: assignment.submissions.map(submission => ({
+          ...submission,
+          analysisResult: submission.analysisResult ? {
+            ...submission.analysisResult,
+            plagiarismCheck: JSON.stringify(submission.analysisResult.plagiarismCheck),
+            grading: JSON.stringify(submission.analysisResult.grading)
+          } : null
+        }))
+      };
+      return convertDates(convertedAssignment);
+    });
+    return { assignments };
   }
 
   async SubmitAssignment(data: {assignmentId: string, studentId: string, content: string}){
@@ -71,7 +111,7 @@ export class AssignmentsService implements OnModuleInit {
       throw new GrpcPermissionDeniedException('Assignment submission is past due date');
     }
 
-    const existingSubmission = await this.assignmentsDAO.getAssignmentSubmission(data.assignmentId, data.studentId);
+    const existingSubmission = await this.assignmentsDAO.getStudentAssignmentSubmission(data.assignmentId, data.studentId);
     if(existingSubmission){
       throw new GrpcAlreadyExistsException('Submission already exists');
     }
@@ -100,5 +140,20 @@ export class AssignmentsService implements OnModuleInit {
 
   async saveAnalysisResults(submissionId: string, analysisResults: {plagiarismCheck: boolean, grading: number, finalRecommendation: string, analyzedAt: Date}) {
     return this.assignmentsDAO.saveAnalysisResults(submissionId, analysisResults);
+  }
+
+  async getAssignmentSubmissions(assignmentId: string) {
+    const submissions = (await this.assignmentsDAO.getAssignmentSubmissions(assignmentId)).map(submission => {
+      const convertedSubmission = {
+        ...submission,
+        analysisResult: submission.analysisResult ? {
+          ...submission.analysisResult,
+          plagiarismCheck: JSON.stringify(submission.analysisResult.plagiarismCheck),
+          grading: JSON.stringify(submission.analysisResult.grading)
+        } : null
+      };
+      return convertDates(convertedSubmission);
+    });
+    return { submissions };
   }
 }

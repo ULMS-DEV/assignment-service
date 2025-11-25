@@ -16,6 +16,11 @@ export class AssignmentsController {
     return this.assignmentsService.getStudentAssignments(data.studentId);
   }
 
+  @GrpcMethod('AssignmentService', 'GetAssignmentSubmissions')
+  getAssignmentSubmissions(data: { assignmentId: string }) {
+    return this.assignmentsService.getAssignmentSubmissions(data.assignmentId);
+  }
+
   @GrpcMethod('AssignmentService', 'GetCourseAssignments')
   getCourseAssignments(data: { courseId: string }) {
     return this.assignmentsService.getCourseAssignments(data.courseId);

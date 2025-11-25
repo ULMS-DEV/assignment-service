@@ -1,29 +1,50 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
-import { Assignment } from "@prisma/client";
+import { Assignment, Prisma } from "@prisma/client";
 
 @Injectable()
 export class AssignmentsDAO {
     constructor(private readonly prisma: PrismaService) {}
 
-    async getById(id: string): Promise<Assignment | null> {
+    async getById(id: string){
         return this.prisma.assignment.findUnique({
             where: { id },
+            include: {
+                submissions: {
+                    include: {
+                        analysisResult: true
+                    }
+                }
+            }
         });
     }
 
-    async getStudentAssignments(courseIds: string[]): Promise<Assignment[]> {
+    async getStudentAssignments(courseIds: string[]) {
         return this.prisma.assignment.findMany({
             where: {
                 courseId: { in: courseIds },
             },
+            include: {
+                submissions: {
+                    include: {
+                        analysisResult: true
+                    }
+                }
+            },
         });
     }
 
-    async getCourseAssignments(courseId: string): Promise<Assignment[]> {
+    async getCourseAssignments(courseId: string): Promise<(Assignment & { submissions: { analysisResult: any }[] })[]> {
         return this.prisma.assignment.findMany({
             where: {
                 courseId: courseId,
+            },
+            include: {
+                submissions: {
+                    include: {
+                        analysisResult: true
+                    }
+                }
             },
         });
     }
@@ -38,12 +59,20 @@ export class AssignmentsDAO {
         });
     }
 
-    async getAssignmentSubmission(assignmentId: string, studentId: string) {
+    async getStudentAssignmentSubmission(assignmentId: string, studentId: string) {
         return this.prisma.submission.findFirst({
             where: {
                 assignmentId,
                 studentId,
             },
+            include: { analysisResult: true }
+        });
+    }
+
+    async getAssignmentSubmissions(assignmentId: string) {
+        return this.prisma.submission.findMany({
+            where: { assignmentId },
+            include: { analysisResult: true }
         });
     }
 
