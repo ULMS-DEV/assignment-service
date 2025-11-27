@@ -87,21 +87,25 @@ export class AssignmentsDAO {
     }
 
     async saveAnalysisResults(submissionId: string, results: {plagiarismCheck: boolean, grading: number, finalRecommendation: string, analyzedAt: Date}) {
-        this.prisma.$transaction(async (tx) => {
-            await tx.submission.update({
-                where: { id: submissionId },
-                data: {
-                    analysisStatus: 'analysis_completed',
-                },
-            })
-            
-            await tx.analysisResult.create({
-                data: {
-                    submissionId,
-                    ...results
-                }
+        try {
+            this.prisma.$transaction(async (tx) => {
+                await tx.submission.update({
+                    where: { id: submissionId },
+                    data: {
+                        analysisStatus: 'analysis_completed',
+                    },
+                })
+                
+                await tx.analysisResult.create({
+                    data: {
+                        submissionId,
+                        ...results
+                    }
+                });
             });
-        });
+        } catch (error) {
+            console.log(error);
+        }
     }
         
     async seed(){
